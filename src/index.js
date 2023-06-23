@@ -1,29 +1,31 @@
-import express from "express";
-import messageRouter from "./src/routes/message.router.js";
-import userRouter from "./src/routes/user.router.js";
-import { PORT } from "./src/configs/environment.js";
-import connectDB from "./src/configs/mongo.js";
+import express from 'express';
+import { router as userRouter } from './routes/user.router.js';
+import { router as messageRouter } from './routes/message.router.js';
+import connect from './configs/mongo.js';
 
 const app = express();
 
 app.use(express.json());
 
-app.use("/users", userRouter);
-app.use("/messages", messageRouter);
+app.use('/messages', messageRouter);
+app.use('', userRouter);
 
-app.get("/", function (req, res) {
-	res.send("<h1>Hola mundo</h1>");
+app.get('/', function Description(req,res) {
+    const student = {
+        name : 'Saul Lefiqueo'
+    }
+    res.send({ student })
 });
 
-async function startSever() {
-	const isConnected = await connectDB();
-	if (isConnected) {
-		app.listen(PORT, () => {
-			console.log(`Server started on ${PORT}`);
-		});
-	} else {
-		process.exit();
-	}
-}
-
-startSever();
+console.log('Connecting to database...');
+connect()
+  .then(() => {
+    console.log('Mongo connected successful');
+    app.listen(3000, async () => {
+      console.log(`Server is running on PORT: 3000`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+    process.exit(-1);
+  });

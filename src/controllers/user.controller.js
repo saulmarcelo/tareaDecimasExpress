@@ -42,4 +42,31 @@ async function getAuthor(req, res) {
         return res.status(500).json({ success: false, message: 'Error al obtener usuarios', error: err.message });
     }
   }
+  async function login(req, res){
+    try{
+      const email = req.body.email;
+
+      if (!email) {
+        return res.status(400).json({ logged: false, message: 'Falta el email' });
+    }
+    
+    const user = await User.findOne({ email: email });
+    const encryptedPassword = user.password;
+    const password = req.body.password;
+    const isMatch = await bcrypt.compare(password, encryptedPassword);
+
+    if (isMatch === false ){
+        return res.status(400).json({ logged: false, message: 'Credenciales incorrectas' });
+    } else {
+      return res.status(200).json({ logged: true, message: 'Credenciales correctas' });
+    }
+    
+    }catch (err) {
+      return res.status(500).json({ logged: false, message: 'Error de login', error: err.message });
+    }
+  }
+
+
+
+  export { createUser, getUsers, login };
 
